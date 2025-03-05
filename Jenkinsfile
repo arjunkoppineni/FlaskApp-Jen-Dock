@@ -8,6 +8,7 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
+                echo "📌 Cloning Repository..."
                 git url: 'https://github.com/arjunkoppineni/docker-jenkins.git', branch: 'main'
                 echo "✅ Repository Cloned Successfully"
             }
@@ -31,10 +32,12 @@ pipeline {
 
         stage('Run Docker Container') {
             steps {
-                echo "🚀 Running Docker Container..."
-                bat "docker stop flask-app || exit 0" // Stop container if already running
-                bat "docker rm flask-app || exit 0"   // Remove container if exists
-                bat "docker run -d -p 5000:5000 --name flask-app %DOCKER_IMAGE%"
+                echo "🚢 Running Docker Container..."
+                bat """
+                    docker stop flask-app || exit 0
+                    docker rm flask-app || exit 0
+                    docker run -d -p 5000:5000 --name flask-app %DOCKER_IMAGE%
+                """
             }
         }
     }
@@ -42,6 +45,7 @@ pipeline {
     post {
         success {
             echo "🎯 Pipeline Executed Successfully!"
+            echo "✅ Visit: http://localhost:5000"
         }
         failure {
             echo "❌ Pipeline Failed!"
