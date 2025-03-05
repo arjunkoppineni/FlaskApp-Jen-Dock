@@ -23,24 +23,20 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 echo "🚀 Pushing Docker Image..."
-                script {
-                    withDockerRegistry([credentialsId: 'docker-hub-cred', url: '']) {
-                        bat "docker login -u %DOCKER_USER% -p %DOCKER_PASS%"
-                        bat "docker push %DOCKER_IMAGE%"
-                    }
+                withDockerRegistry([credentialsId: 'docker-hub-cred', url: 'https://index.docker.io/v1/']) {
+                    bat "docker push %DOCKER_IMAGE%"
                 }
             }
         }
 
         stage('Run Docker Container') {
-    steps {
-        echo "🚀 Running Docker Container..."
-        bat "docker stop flask-app || exit 0" // Stop container if already running
-        bat "docker rm flask-app || exit 0"   // Remove container if exists
-        bat "docker run -d -p 5000:5000 --name flask-app %DOCKER_IMAGE%"
-    }
-}
-
+            steps {
+                echo "🚀 Running Docker Container..."
+                bat "docker stop flask-app || exit 0" // Stop container if already running
+                bat "docker rm flask-app || exit 0"   // Remove container if exists
+                bat "docker run -d -p 5000:5000 --name flask-app %DOCKER_IMAGE%"
+            }
+        }
     }
 
     post {
